@@ -15,7 +15,7 @@ class WeatherSearch:
 		self.settings = fileIO("data/weather/settings.json", "load")
 
 	@commands.command(no_pm=True, pass_context=False)
-	async def weather(self, location):
+	async def temp(self, location):
 		url = "http://api.wunderground.com/api/" + self.settings['api_key'] + "/conditions/q/" + location + ".json"
 		async with aiohttp.get(url) as r:
 		    data = await r.json()
@@ -31,10 +31,13 @@ def check_folders():
 		os.makedirs("data/weather")
 
 def check_files():
+	settings = {"api_key": "Get your API key from: www.wunderground.com/weather/api/"}
+	
 	f = "data/weather/settings.json"
 	if not fileIO(f, "check"):
-		print("Creating empty settings.json")
-		fileIO(f, "save", {})
+		print("Creating settings.json")
+		print("You must obtain an API key as noted in the newly created 'settings.json' file")
+		fileIO(f, "save", settings)
 
 def setup(bot):
 	check_folders()
