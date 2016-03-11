@@ -20,14 +20,18 @@ class WeatherSearch:
 		await self.bot.say(url)
 		async with aiohttp.get(url) as r:
 		    data = await r.json()
-		if != ["error"] in data["response"]:
+		if "current_observation" in data:
 			currentobs = data["current_observation"]
 			temperature = currentobs["temperature_string"]
 			await self.bot.say(temperature)
 		else:
-			resp = data["error"]
-			error = resp["description"]
-			await self.bot.say(error +"\nPlease use your zip code for the format State/City (Country/City if outside of the US).")
+			if "error" in data["response"]:
+				resp = data["response"]
+				error = resp["error"]
+				desc = error["description"]
+				await self.bot.say(desc +".\nPlease use your zip code or the format State/City (Country/City if outside of the US).")
+			else:
+				await self.bot.say("Please use your zip code or the format State/City (Country/City if outside of the US).")
 
 def check_folders():
 	if not os.path.exists("data/weather"):
