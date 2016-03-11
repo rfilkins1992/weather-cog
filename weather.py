@@ -17,21 +17,13 @@ class WeatherSearch:
 	@commands.command(no_pm=True, pass_context=False)
 	async def weather(self, location):
 		url = "http://api.wunderground.com/api/" + self.settings['api_key'] + "/conditions/q/" + location + ".json"
-		await self.bot.say(url)
 		async with aiohttp.get(url) as r:
 		    data = await r.json()
 		if "current_observation" in data:
-			currentobs = data["current_observation"]
-			temperature = currentobs["temperature_string"]
-			await self.bot.say(temperature)
+			temperature = data["current_observation"].get("temperature_string", "No temperature found.")
+			await self.bot.say("Current temperature in your location is: " + temperature +".")
 		else:
-			if "error" in data["response"]:
-				resp = data["response"]
-				error = resp["error"]
-				desc = error["description"]
-				await self.bot.say(desc +".\nPlease use your zip code or the format State/City (Country/City if outside of the US).")
-			else:
-				await self.bot.say("Please use your zip code or the format State/City (Country/City if outside of the US).")
+			await self.bot.say("Please use your zip code or the format City,State(City,Country if outside of the US). \n****NOTE:**** Include the ',' after the state and do NOT put a space after the ','")
 
 def check_folders():
 	if not os.path.exists("data/weather"):
